@@ -1,0 +1,47 @@
+openshift:
+  hosts:
+    localhost:
+      ansible_connection: local
+  vars:
+    bin_dir: /usr/local/bin
+    working_dir: /tmp
+    state: present
+
+    ocp_cluster:
+      name: "{{ cluster_name }}"
+      ocp_version: "4.13"
+
+    install_config:
+      base_domain: "<base_domain>"
+      control_plane:
+        cpus: 8
+        cores_per_socket: 4
+        memory_mb: 24576
+        disk_size_gb: 120
+      workers:
+        cpus: 24
+        cores_per_socket: 12
+        memory_mb: 122880
+        disk_size_gb: 120
+        replicas: 4
+      pull_secret: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          <TODO ENCRYPTED VALUE>
+
+    vcenter:
+      host: vcenterhost.fqdn
+      datastore: DS_Name
+      # following are from vaulted files
+      service_account_username: "{{ vsphereuname }}"
+      service_account_password: "{{ vspherepw }}"
+      datacenter: DC_Name
+
+    vcenter_cluster:
+      # vm is a hidden element in the below path and is required to work
+      folder_path: "/VCenter/Folder/vm/Path/"
+      folder_name: "VCenterFolder_Name"
+      template_name: this-needs-to-be-updated-after-IPI-build-starts
+      api_vip: 10.7.22.24
+      ingress_vip: 10.7.22.25
+      network: VCenter-network
+      cluster_name: VCenter-cluster-name

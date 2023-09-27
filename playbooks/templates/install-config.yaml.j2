@@ -1,0 +1,85 @@
+apiVersion: v1
+baseDomain: {{ install_config.base_domain }}
+controlPlane:
+  architecture: amd64
+  hyperthreading: Enabled
+  name: master
+{% if install_config.control_plane is defined %}
+  platform:
+    vsphere:
+      cpus: {{ install_config.control_plane.cpus }}
+      coresPerSocket: {{ install_config.control_plane.cores_per_socket }}
+      memoryMB: {{ install_config.control_plane.memory_mb }}
+      osDisk:
+        diskSizeGB: {{ install_config.control_plane.disk_size_gb }}
+{% else %}
+  platform: {}
+{% endif %}
+  replicas: 3
+compute:
+  architecture: amd64
+  hyperthreading: Enabled
+  name: worker
+{% if install_config.workers is defined %}
+  platform:
+    vsphere:
+      cpus: {{ install_config.workers.cpus }}
+      coresPerSocket: {{ install_config.workers.cores_per_socket }}
+      memoryMB: {{ install_config.workers.memory_mb }}
+      osDisk:
+        diskSizeGB: {{ install_config.workers.disk_size_gb }}
+  replicas: {{ install_config.workers.replicas }}
+{% else %}
+  platform:
+    replicas: 3
+{% endif %}
+metadata:
+  creationTimestamp: null
+  name: {{ install_config.cluster_name }}
+networking:
+  clusterNetwork:
+{% if install_config.cluster_network is defined %}
+  - cidr: {{ install_config.cluster_network.cidr }}
+    hostPrefix: {{ install_config.cluster_network.prefix }}
+{% else %}
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+{% endif %}
+  machineNetwork:
+{% if install_config.machine_network is defined %}
+  - cidr: {{ install_config.machine_network.cidr }}
+{% else %}
+  - cidr: 10.0.0.0/16
+{% endif %}
+{% if install_config.network_type is defined %}
+  networkType: {{ install_config.network_type }}
+{% else %}
+  networkType: OpenShiftSDN
+{% endif %}
+  serviceNetwork:
+{% if install_config.service_network is defined %}
+  - {{ install_config.service_network.cidr }}
+{% else %}
+  - 172.30.0.0/16
+{% endif %}
+platform:
+  vsphere:
+    apiVIPs:
+      - {{ vcenter_cluster.api_vip }}
+    ingressVIPs:
+      - {{ vcenter_cluster.ingress_vip }}
+    cluster: {{ vcenter_cluster.cluster_name }}
+    datacenter: {{ vcenter.datacenter }}
+    defaultDatastore: {{ vcenter.datastore }}
+    network: {{ vcenter_cluster.network }}
+    password: {{ vspherepw }}
+    username: {{ vsphereuname }}
+    vCenter: {{ vcenter.host }}
+    folder: "{{ vcenter_cluster.folder_path }}{{ vcenter_cluster.folder_name }}"
+    clusterOSImage: http://localhost/rhcos-{{ install_config.ocp_install_ver }}-x86_64-vmware.x86_64.ova
+publish: External
+pullSecret: '{{ install_config.pull_secret }}'
+{% if install_config.ssh_key is defined %}
+sshKey: |
+   {{ install_config.ssh_key }}
+{% endif %}
