@@ -41,6 +41,7 @@ openshift:
       folder_path: "/VCenter/Folder/vm/Path/"
       folder_name: "VCenterFolder_Name"
       template_name: this-needs-to-be-updated-after-IPI-build-starts
+      disk_type: thin
       api_vip: 10.7.22.24
       ingress_vip: 10.7.22.25
       network: VCenter-network

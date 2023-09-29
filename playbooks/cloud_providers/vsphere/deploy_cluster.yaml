@@ -12,7 +12,7 @@
 
     - name: Create Cluster 
       include_role: 
-        name: ocp_cluster
+        name: ocp_deploy_cluster
       vars:
         cluster_name: '{{ ocp_cluster.name }}'
 

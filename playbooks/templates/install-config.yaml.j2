@@ -17,7 +17,7 @@ controlPlane:
 {% endif %}
   replicas: 3
 compute:
-  architecture: amd64
+- architecture: amd64
   hyperthreading: Enabled
   name: worker
 {% if install_config.workers is defined %}
@@ -35,7 +35,7 @@ compute:
 {% endif %}
 metadata:
   creationTimestamp: null
-  name: {{ install_config.cluster_name }}
+  name: {{ ocp_cluster.name }}
 networking:
   clusterNetwork:
 {% if install_config.cluster_network is defined %}
@@ -71,12 +71,13 @@ platform:
     cluster: {{ vcenter_cluster.cluster_name }}
     datacenter: {{ vcenter.datacenter }}
     defaultDatastore: {{ vcenter.datastore }}
+    diskType: {{ vcenter_cluster.disk_type }}
     network: {{ vcenter_cluster.network }}
     password: {{ vspherepw }}
     username: {{ vsphereuname }}
     vCenter: {{ vcenter.host }}
     folder: "{{ vcenter_cluster.folder_path }}{{ vcenter_cluster.folder_name }}"
-    clusterOSImage: http://localhost/rhcos-{{ install_config.ocp_install_ver }}-x86_64-vmware.x86_64.ova
+    clusterOSImage: http://localhost/rhcos-{{ install_config.ocp_version }}-x86_64-vmware.x86_64.ova
 publish: External
 pullSecret: '{{ install_config.pull_secret }}'
 {% if install_config.ssh_key is defined %}

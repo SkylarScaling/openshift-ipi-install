@@ -11,7 +11,7 @@
 
 - name: copy install-config.yaml into install_dir
   ansible.builtin.template: 
-    src: "{{ playbook_dir }}/../../templates/install-config.yaml.j2"
+    src: "{{ playbook_dir }}/templates/install-config.yaml.j2"
     dest: "{{ install_dir.path }}/install-config.yaml"
 
 - name: run IPI installer
